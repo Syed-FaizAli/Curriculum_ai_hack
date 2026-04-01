@@ -1,0 +1,12 @@
+django>=5.0
+djangorestframework
+django-cors-headers
+openai
+google-generativeai
+sentence-transformers
+weasyprint
+reportlab
+python-dotenv
+requests
+pdfplumber
+pypdf
