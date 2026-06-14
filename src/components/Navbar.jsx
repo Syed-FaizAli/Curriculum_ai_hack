@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from 'antd';
-import { RocketOutlined, DashboardOutlined, FileTextOutlined } from '@ant-design/icons';
+import { RocketOutlined, DashboardOutlined, FileTextOutlined, ShopOutlined } from '@ant-design/icons';
 import { useTheme } from '../context/ThemeContext';
 
 // Sun & Moon SVG icons for theme toggle
@@ -30,6 +30,36 @@ const Navbar = () => {
     const { theme, toggleTheme } = useTheme();
     const isAuth = location.pathname !== '/' && location.pathname !== '/login' && location.pathname !== '/signup';
 
+    const [tokens, setTokens] = React.useState(() => {
+        const t = localStorage.getItem('audit_tokens');
+        if (t === null) {
+            localStorage.setItem('audit_tokens', '5');
+            return 5;
+        }
+        return parseInt(t);
+    });
+    const [unlocks, setUnlocks] = React.useState(() => {
+        const u = localStorage.getItem('lead_unlocks');
+        if (u === null) {
+            localStorage.setItem('lead_unlocks', '5');
+            return 5;
+        }
+        return parseInt(u);
+    });
+
+    React.useEffect(() => {
+        const updateBalances = () => {
+            setTokens(parseInt(localStorage.getItem('audit_tokens') || '5'));
+            setUnlocks(parseInt(localStorage.getItem('lead_unlocks') || '5'));
+        };
+        window.addEventListener('balance-update', updateBalances);
+        window.addEventListener('storage', updateBalances);
+        return () => {
+            window.removeEventListener('balance-update', updateBalances);
+            window.removeEventListener('storage', updateBalances);
+        };
+    }, []);
+
     return (
         <nav className="fixed top-4 left-4 right-4 z-50">
             <div className="glass-panel px-6 py-4 flex justify-between items-center max-w-7xl mx-auto">
@@ -43,11 +73,20 @@ const Navbar = () => {
                 <div className="flex items-center gap-6">
                     {isAuth ? (
                         <>
+                            <Link to="/pricing" className="bg-indigo-500/10 border border-indigo-500/25 px-2.5 py-1 rounded-lg text-indigo-400 font-semibold text-xs flex items-center gap-1 hover:bg-indigo-500/20 transition-all mr-2">
+                                🪙 {tokens} Audits
+                            </Link>
+                            <Link to="/pricing" className="bg-purple-500/10 border border-purple-500/25 px-2.5 py-1 rounded-lg text-purple-400 font-semibold text-xs flex items-center gap-1 hover:bg-purple-500/20 transition-all mr-4">
+                                🔑 {unlocks} Unlocks
+                            </Link>
                             <Link to="/dashboard" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-2">
                                 <DashboardOutlined /> Dashboard
                             </Link>
                             <Link to="/upload" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-2">
                                 <FileTextOutlined /> Upload
+                            </Link>
+                            <Link to="/marketplaces" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-2">
+                                <ShopOutlined /> Marketplace
                             </Link>
                             <Link to="/recent" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-2">
                                 History

@@ -313,7 +313,7 @@ const Landing = () => {
 
             {/* Footer */}
             <footer className="py-8 border-t border-[var(--border-tertiary)] mt-20 text-center text-[var(--text-faint)] text-sm">
-                <div className="mb-2">Built by <span className="text-indigo-400 font-bold">CodeVengers</span></div>
+                <div className="mb-2">Built by <span className="text-indigo-400 font-bold">CodeAbyss</span></div>
                 <div className="flex justify-center gap-6 mb-4">
                     <a href="#" className="hover:text-[var(--text-primary)] transition-colors">Privacy</a>
                     <a href="#" className="hover:text-[var(--text-primary)] transition-colors">Terms</a>

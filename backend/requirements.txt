@@ -10,3 +10,6 @@ python-dotenv
 requests
 pdfplumber
 pypdf
+psycopg2-binary
+dj-database-url
+gunicorn

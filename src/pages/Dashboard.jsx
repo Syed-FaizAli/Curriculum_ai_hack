@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Progress, List, Button, Tag, Avatar, Spin } from 'antd';
-import { WarningOutlined, CheckCircleOutlined, ArrowRightOutlined, FilePdfOutlined, LoadingOutlined } from '@ant-design/icons';
+import { WarningOutlined, CheckCircleOutlined, ArrowRightOutlined, FilePdfOutlined, LoadingOutlined, ShopOutlined } from '@ant-design/icons';
 import GlassCard from '../components/GlassCard';
 import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
@@ -81,6 +81,31 @@ const Dashboard = () => {
                         <div className={`${styles.statValue} text-red-400`}>{latest?.critical_gaps?.length || 0}</div>
                     </GlassCard>
                 </div>
+
+                {/* Subject Marketplace CTA Banner */}
+                <GlassCard className="mb-8 p-6 flex flex-col md:flex-row items-center justify-between gap-6 border-[var(--border-secondary)] relative overflow-hidden">
+                    {/* Background decorative gradient */}
+                    <div className="absolute -left-10 -bottom-10 w-32 h-32 rounded-full bg-purple-500/10 blur-xl pointer-events-none" />
+                    <div className="absolute -right-10 -top-10 w-32 h-32 rounded-full bg-indigo-500/10 blur-xl pointer-events-none" />
+
+                    <div className="flex items-center gap-4 relative z-10">
+                        <div className="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-2xl shadow-inner">
+                            <ShopOutlined />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold text-[var(--text-primary)]">Need External Subject Matter Experts?</h3>
+                            <p className="text-sm text-[var(--text-secondary)] mt-0.5">
+                                Discover specialized academic outsourcing companies to deliver bootcamps, workshops, and certified programs in advanced niche domains.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <Link to="/marketplaces" className="w-full md:w-auto relative z-10">
+                        <Button type="primary" size="large" className="w-full md:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 border-none text-white hover:opacity-90 font-semibold px-6 rounded-xl">
+                            Explore Marketplaces
+                        </Button>
+                    </Link>
+                </GlassCard>
 
                 <div className="grid lg:grid-cols-3 gap-6">
                     <section className="lg:col-span-2 space-y-6">

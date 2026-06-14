@@ -12,6 +12,9 @@ import Welcome from './pages/Welcome';
 import Pricing from './pages/Pricing';
 import Support from './pages/Support';
 import About from './pages/About';
+import Marketplace from './pages/Marketplace';
+import MarketplacesHub from './pages/MarketplacesHub';
+import IndustryExperts from './pages/IndustryExperts';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -38,6 +41,10 @@ function App() {
           <Route path="/upload" element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
           <Route path="/recent" element={<ProtectedRoute><Recent /></ProtectedRoute>} />
           <Route path="/report/:id" element={<ProtectedRoute><Report /></ProtectedRoute>} />
+          <Route path="/marketplace" element={<Navigate to="/marketplaces" replace />} />
+          <Route path="/marketplaces" element={<ProtectedRoute><MarketplacesHub /></ProtectedRoute>} />
+          <Route path="/marketplaces/subject-outsourcing" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
+          <Route path="/marketplaces/industry-experts" element={<ProtectedRoute><IndustryExperts /></ProtectedRoute>} />
         </Routes>
       </Router>
     </ThemeProvider>

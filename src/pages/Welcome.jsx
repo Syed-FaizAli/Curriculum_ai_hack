@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'antd';
-import { PlusCircleOutlined, HistoryOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, HistoryOutlined, ShopOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
 import Navbar from '../components/Navbar';
@@ -35,6 +35,16 @@ const Welcome = () => {
                                 className="h-16 px-8 text-xl bg-transparent border-2 border-[var(--text-primary)] text-[var(--text-primary)] hover:bg-[var(--text-primary)] hover:text-[var(--bg-primary)] transition-all"
                             >
                                 View History
+                            </Button>
+                        </Link>
+
+                        <Link to="/marketplaces">
+                            <Button
+                                size="large"
+                                icon={<ShopOutlined />}
+                                className="h-16 px-8 text-xl bg-transparent border-2 border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-white hover:border-purple-500 transition-all"
+                            >
+                                Marketplace Hub
                             </Button>
                         </Link>
                     </div>

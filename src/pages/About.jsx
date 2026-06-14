@@ -24,6 +24,12 @@ const About = () => {
             role: "CSE-AIML Student",
 
             image: "/faiz.png",
+        },
+        {
+            name: "Syed Saad",
+            role: "CSE (AI & ML) Student",
+
+            image: "/saad .png",
         }
     ];
 
@@ -39,7 +45,7 @@ const About = () => {
                     className="text-center mb-16"
                 >
                     <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400 mb-4">
-                        Meet the CodeVengers
+                        Meet the CodeAbyss
                     </h1>
                     <p className="text-[var(--text-muted)] text-lg max-w-2xl mx-auto">
                         Passionate developers building the future of education with AI.
@@ -47,7 +53,7 @@ const About = () => {
                 </motion.div>
 
                 {/* Team Section */}
-                <div className="grid md:grid-cols-3 gap-8 mb-20">
+                <div className="grid md:grid-cols-2 gap-8 mb-20">
                     {teamMembers.map((member, index) => (
                         <motion.div
                             key={index}

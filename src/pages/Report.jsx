@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Descriptions, Collapse, Tag, Button, Spin, message, Progress, Dropdown } from 'antd';
-import { DownloadOutlined, ShareAltOutlined, LoadingOutlined, ArrowRightOutlined, MailOutlined, WhatsAppOutlined, LinkOutlined, GoogleOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { DownloadOutlined, ShareAltOutlined, LoadingOutlined, ArrowRightOutlined, MailOutlined, WhatsAppOutlined, LinkOutlined } from '@ant-design/icons';
 import GlassCard from '../components/GlassCard';
 import ChatBot from '../components/ChatBot';
 import Navbar from '../components/Navbar';
 import { useParams } from 'react-router-dom';
+import html2pdf from 'html2pdf.js';
 
 const { Panel } = Collapse;
 
@@ -54,43 +55,128 @@ const Report = () => {
     const alignment = score >= 80 ? 'High' : score >= 60 ? 'Moderate' : 'Low';
     const scoreLabel = score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : score >= 40 ? 'Needs Improvement' : 'Critical';
 
-    const shareUrl = window.location.href;
-    const shareText = `Check out this curriculum analysis for ${data.program_name}!`;
+    // ---------- PDF generation helpers ----------
+    const getPrintElement = () => document.querySelector('.print-report');
+
+    const getPdfOptions = () => ({
+        margin:      [10, 10, 10, 10],
+        filename:    `Curriculum_Audit_Report_${data.program_name?.replace(/\s+/g, '_') || id}.pdf`,
+        image:       { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    });
+
+    // Generate the PDF as a Blob, then run callback(blob, filename)
+    const generatePdfBlob = (callback) => {
+        const el = getPrintElement();
+        if (!el) {
+            message.error('Could not locate report content for PDF generation.');
+            return;
+        }
+        const opts = getPdfOptions();
+        html2pdf()
+            .set(opts)
+            .from(el)
+            .outputPdf('blob')
+            .then(blob => callback(blob, opts.filename))
+            .catch(() => message.error('PDF generation failed.'));
+    };
 
     const shareMenu = {
         items: [
             {
                 key: '1',
-                label: 'Copy Link',
+                label: 'Copy PDF Link',
                 icon: <LinkOutlined />,
                 onClick: () => {
-                    navigator.clipboard.writeText(shareUrl);
-                    message.success('Link copied!');
-                }
+                    message.loading({ content: 'Generating PDF link…', key: 'copy-pdf', duration: 0 });
+                    generatePdfBlob((blob, filename) => {
+                        // Create a temporary object URL and copy it to clipboard.
+                        // The URL is valid for the lifetime of this browser tab.
+                        const objectUrl = URL.createObjectURL(blob);
+                        navigator.clipboard.writeText(objectUrl).then(() => {
+                            message.success({ content: 'PDF link copied to clipboard!', key: 'copy-pdf', duration: 3 });
+                        }).catch(() => {
+                            // Clipboard write failed – fall back: open the PDF in a new tab
+                            window.open(objectUrl, '_blank');
+                            message.info({ content: 'PDF opened in new tab. Copy the URL from your browser.', key: 'copy-pdf', duration: 4 });
+                        });
+                    });
+                },
             },
             {
                 key: '2',
-                label: 'Gmail',
+                label: 'Share via Email',
                 icon: <MailOutlined />,
-                onClick: () => window.open(`https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent("Curriculum Analysis Report")}&body=${encodeURIComponent(shareText + "\n\n" + shareUrl)}`, '_blank')
+                onClick: () => {
+                    message.loading({ content: 'Generating PDF…', key: 'email-pdf', duration: 0 });
+                    generatePdfBlob((blob, filename) => {
+                        // Download the PDF so the user can attach it manually,
+                        // then open an email compose window with a helpful body.
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        a.click();
+                        URL.revokeObjectURL(url);
+
+                        const subject = encodeURIComponent(`Curriculum Analysis Report — ${data.program_name}`);
+                        const body = encodeURIComponent(
+                            `Hi,\n\nPlease find attached the Curriculum Analysis Report for "${data.program_name}".\n\n` +
+                            `The PDF has been saved to your Downloads folder as:\n${filename}\n\n` +
+                            `Report highlights:\n` +
+                            `• Relevance Score: ${score}/100\n` +
+                            `• Market Alignment: ${alignment}\n` +
+                            `• Topics Analyzed: ${data.topics_extracted}\n\n` +
+                            `Generated by CodeAbyss Curriculum AI`
+                        );
+                        message.success({ content: 'PDF downloaded. Opening email composer…', key: 'email-pdf', duration: 3 });
+                        setTimeout(() => window.open(`mailto:?subject=${subject}&body=${body}`, '_self'), 600);
+                    });
+                },
             },
             {
                 key: '3',
-                label: 'WhatsApp',
+                label: 'Share via WhatsApp',
                 icon: <WhatsAppOutlined />,
-                onClick: () => window.open(`https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`, '_blank')
+                onClick: () => {
+                    message.loading({ content: 'Generating PDF…', key: 'wa-pdf', duration: 0 });
+                    generatePdfBlob((blob, filename) => {
+                        // Download the PDF, then open WhatsApp with a descriptive message.
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        a.click();
+                        URL.revokeObjectURL(url);
+
+                        const text = encodeURIComponent(
+                            `📊 *Curriculum Analysis Report — ${data.program_name}*\n\n` +
+                            `✅ Relevance Score: *${score}/100*\n` +
+                            `📈 Market Alignment: *${alignment}*\n` +
+                            `🔍 Topics Analyzed: *${data.topics_extracted}*\n\n` +
+                            `The full PDF report (${filename}) has been downloaded and is ready to share as an attachment.\n\n` +
+                            `Generated by CodeAbyss Curriculum AI`
+                        );
+                        message.success({ content: 'PDF downloaded. Opening WhatsApp…', key: 'wa-pdf', duration: 3 });
+                        setTimeout(() => window.open(`https://wa.me/?text=${text}`, '_blank'), 600);
+                    });
+                },
             },
-            {
-                key: '4',
-                label: 'Google Drive',
-                icon: <GoogleOutlined />,
-                onClick: () => window.open(`https://drive.google.com/`, '_blank')
-            }
         ]
     };
 
     const handleExport = () => {
-        window.print();
+        message.loading({ content: 'Generating PDF…', key: 'export-pdf', duration: 0 });
+        generatePdfBlob((blob, filename) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            message.success({ content: `PDF saved as ${filename}`, key: 'export-pdf', duration: 3 });
+        });
     };
 
     return (
@@ -233,7 +319,7 @@ const Report = () => {
                 <div className="print-header">
                     <div className="print-logo">
                         <span className="print-logo-icon">⚡</span>
-                        <span>CodeVengers</span>
+                        <span>CodeAbyss</span>
                     </div>
                     <h1 className="print-title">Curriculum Analysis Report</h1>
                     <div className="print-meta">
@@ -359,7 +445,7 @@ const Report = () => {
                 <div className="print-footer">
                     <hr className="print-divider" />
                     <div className="print-footer-content">
-                        <span>Generated by <strong>CodeVengers Curriculum AI</strong></span>
+                        <span>Generated by <strong>CodeAbyss Curriculum AI</strong></span>
                         <span>Report #{id} • {new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                     </div>
                     <p className="print-disclaimer">This report was generated using AI-powered analysis. Results should be reviewed by domain experts before implementation.</p>

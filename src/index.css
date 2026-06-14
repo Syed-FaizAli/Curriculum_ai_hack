@@ -584,3 +584,60 @@
   font-style: italic;
   margin: 0;
 }
+
+/* Subject Marketplace Custom Styling */
+.custom-select .ant-select-selector {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-radius: 0.75rem !important;
+  height: 42px !important;
+  display: flex !important;
+  align-items: center !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-select .ant-select-selector:hover {
+  border-color: #818cf8 !important;
+}
+
+.custom-select .ant-select-selection-item {
+  color: var(--text-primary) !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+}
+
+.custom-select .ant-select-arrow {
+  color: var(--text-muted) !important;
+}
+
+/* Ant Design Select Dropdown Styling */
+.ant-select-dropdown {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+  padding: 4px !important;
+}
+
+.ant-select-item {
+  color: var(--text-secondary) !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.2s ease !important;
+  margin: 2px 0 !important;
+}
+
+.ant-select-item-option-selected {
+  background-color: var(--hover-bg) !important;
+  color: #818cf8 !important;
+  font-weight: 600 !important;
+}
+
+.ant-select-item-option-active {
+  background-color: var(--hover-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-select-item-empty {
+  color: var(--text-muted) !important;
+}
